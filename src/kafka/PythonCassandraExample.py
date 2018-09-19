@@ -21,7 +21,7 @@ class PythonCassandraExample:
         self.cluster.shutdown()
 
     def createsession(self):
-        self.cluster = Cluster(['localhost'])
+        self.cluster = Cluster(['18.213.94.80'])
         self.session = self.cluster.connect(self.keyspace)
 
     def getsession(self):
