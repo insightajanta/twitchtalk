@@ -1,6 +1,7 @@
 # twitchchat
 
 ## Python packages to install
+
 #####To use kafka from Python install this package
 sudo pip install kafka-python
 #####To use json like format - here used for kafka ingestion
@@ -30,7 +31,8 @@ Follow instructions for Installing from binary tarball here: http://cassandra.ap
 
 In cqlsh:
 - create keyspace testkeyspace;
-- create table livechannels(key int primary key, value text)
+- create keyspace testkeyspace with replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 3 };
+- create table livechannels(ts text primary key, value text)
 
 ##Redis
 brew install redis (installed redis-4.0.11.high_sierra.bottle.tar.gz)

@@ -6,6 +6,7 @@ class irc:
 
     def __init__(self, config):
         self.config = config
+        self.channels = []
 
     def check_for_message(self, data):
         if re.match(
@@ -75,6 +76,7 @@ class irc:
 
     def join_channels(self, channels):
         pp('Joining channels %s.' % channels)
+        self.channels = channels
         self.sock.send('JOIN %s\r\n' % channels)
         pp('Joined channels.')
 
@@ -82,3 +84,12 @@ class irc:
         pp('Leaving chanels %s,' % channels)
         self.sock.send('PART %s\r\n' % channels)
         pp('Left channels.')
+
+    def leave_and_join(self, new_channels):
+        # assume old_channels and new_channels are set
+        common = self.channels & new_channels
+        old_to_remove = self.channels - common
+        new_to_add = new_channels - common
+        if len(old_to_remove) > 0:
+            self.leave_channels(old_to_remove)
+            self.join_channels(new_to_add)
