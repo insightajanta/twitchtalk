@@ -23,11 +23,28 @@ download from: https://www.apache.org/dyn/closer.cgi?path=/kafka/2.0.0/kafka_2.1
 
 follow instructions: https://kafka.apache.org/quickstart
 
-## Cassandra installation (local)
+## Cassandra installation (local) version 3.11.3
 download from: http://www.apache.org/dyn/closer.lua/cassandra/3.11.3/apache-cassandra-3.11.3-bin.tar.gz
 
 Follow instructions for Installing from binary tarball here: http://cassandra.apache.org/doc/latest/getting_started/installing.html
 
 In cqlsh:
 - create keyspace testkeyspace;
-- create table chatmessage(key int primary key, value text)
+- create table livechannels(key int primary key, value text)
+
+##Redis
+brew install redis (installed redis-4.0.11.high_sierra.bottle.tar.gz)
+
+brew services start redis
+
+sudo pip install redis (Successfully installed redis-2.10.6)
+
+#Docker steps
+##Cassandra
+(full instructions: https://docs.docker.com/samples/library/cassandra/)
+
+docker run --name cassandra -d cassandra:3.11.3
+
+To connect using cqlsh, do the following
+
+docker run -it --link cassandra:cassandra --rm cassandra cqlsh cassandra
