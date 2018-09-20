@@ -18,7 +18,7 @@ class Roboraj:
         self.config = config
         self.irc = irc_.irc(config)
         self.socket = self.irc.get_irc_socket_object()
-        self.chat_topic = KafkaProducer(bootstrap_servers=self.config['kakfa_config'],
+        self.chat_topic = KafkaProducer(bootstrap_servers=config['kafka_config'],
                                         value_serializer=msgpack.dumps,
                                         api_version=(0, 10, 1))
 
@@ -58,4 +58,4 @@ class Roboraj:
 
             self.chat_topic.send('chatmessage', {'channel': channel, 'username': username, 'message': message})
 
-            ppi(channel, message, username)
+            #ppi(channel, message, username)

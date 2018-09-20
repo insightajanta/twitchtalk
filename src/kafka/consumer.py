@@ -42,7 +42,7 @@ class ChatMessageConsumer:
         #live channel consumer
         self.chat_consumer = KafkaConsumer(value_deserializer=msgpack.loads, api_version=(0, 10, 1))
         self.chat_consumer.subscribe(['chatmessage'])
-        self.redis = redis.Redis(host='18.213.94.80', port=6379)
+        self.redis = redis.Redis(host='localhost', port=6379)
 
     def run(self):
         # ConsumerRecord(topic=u'chatmessage', partition=0, offset=157, timestamp=1537320670585, timestamp_type=0, key=None, value={' channel ': '#nickmercs', ' username ': 'jpking715', ' message ': 'this is live'}, checksum=1363374979, serialized_key_size=-1, serialized_value_size=66)

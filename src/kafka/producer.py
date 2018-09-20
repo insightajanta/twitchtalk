@@ -6,8 +6,6 @@ from cassandra import ConsistencyLevel
 from cassandra.cluster import Cluster, BatchStatement
 from cassandra.query import SimpleStatement
 
-from orderedset import OrderedSet
-
 import json
 import time
 import redis
@@ -22,7 +20,7 @@ class LiveStreamProducer:
                                       value_serializer=msgpack.dumps,
                                       api_version=(0, 10, 1))
         self.client = TwitchClient(client_id=self.config['client_id'])
-        self.redis = redis.Redis(host='18.213.94.80', port=6379)
+        self.redis = redis.Redis(host='localhost', port=6379)
 
     def get_top_live_channels(self):
         print "About to get live streams"
