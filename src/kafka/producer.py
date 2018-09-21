@@ -1,9 +1,6 @@
 from kafka import KafkaProducer
-from kafka.errors import KafkaError
 import msgpack
-import PythonCassandraExample
 from cassandra import ConsistencyLevel
-from cassandra.cluster import Cluster, BatchStatement
 from cassandra.query import SimpleStatement
 
 import json
@@ -38,7 +35,7 @@ class LiveStreamProducer:
                 # self.producer.send('livechannels', {'channel': stream['channel']['name'], 'viewers': stream['viewers']})
 
         # store the current list in redis
-        self.redis.set('__channels', channel_list)
+        self.redis.sadd('__channels', *channel_list[:5])
 
         print "Total streams inserted: ", count, channel_list
 

@@ -9,7 +9,6 @@ import msgpack
 from functions_general import *
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
-from threading import Timer
 
 
 class Roboraj:
@@ -22,14 +21,14 @@ class Roboraj:
                                         value_serializer=msgpack.dumps,
                                         api_version=(0, 10, 1))
 
-    # def hello(self):
-    #     self.irc.leave_and_join(self)
-
     def run(self):
-        # t = Timer(30.0, hello, args=[self])
-        # t.start()  # after 30 seconds, "hello, world" will be printed
-
+        t1 = time.time()-60
+        t2 = time.time()
         while True:
+            if t2 - t1 > 60:
+                self.irc.leave_and_join()
+                t1 = time.time()
+            t2 = time.time()
             self.get_chat_message()
 
     def get_chat_message(self):
@@ -41,7 +40,8 @@ class Roboraj:
 
         if len(data) == 0:
             pp('Connection was lost, reconnecting.')
-            sock = self.irc.get_irc_socket_object()
+            self.irc.channels = set()
+            self.socket = self.irc.get_irc_socket_object()
 
         if config['debug']:
             print data
@@ -58,4 +58,4 @@ class Roboraj:
 
             self.chat_topic.send('chatmessage', {'channel': channel, 'username': username, 'message': message})
 
-            #ppi(channel, message, username)
+            ppi(channel, message, username)

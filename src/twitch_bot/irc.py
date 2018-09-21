@@ -1,4 +1,4 @@
-import socket, re, time, sys
+import socket, re, time, sys, redis
 from functions_general import *
 
 
@@ -6,7 +6,8 @@ class irc:
 
     def __init__(self, config):
         self.config = config
-        self.channels = []
+        self.channels = set()
+        self.redis = redis.Redis(host='localhost', port=6379)
 
     def check_for_message(self, data):
         if re.match(
@@ -67,12 +68,13 @@ class irc:
             pp('Login unsuccessful. (hint: make sure your oauth token is set in self.config/self.config.py).', 'error')
             sys.exit()
 
-        self.join_channels(self.channels_to_string(self.config['channels']))
+        self.leave_and_join()
 
         return sock
 
     def channels_to_string(self, channel_list):
-        return ','.join(channel_list)
+        hash_prepended = list(map(lambda x: '#'+x, channel_list))
+        return ','.join(hash_prepended)
 
     def join_channels(self, channels):
         pp('Joining channels %s.' % channels)
@@ -85,11 +87,26 @@ class irc:
         self.sock.send('PART %s\r\n' % channels)
         pp('Left channels.')
 
-    def leave_and_join(self, new_channels):
-        # assume old_channels and new_channels are set
-        common = self.channels & new_channels
-        old_to_remove = self.channels - common
-        new_to_add = new_channels - common
-        if len(old_to_remove) > 0:
-            self.leave_channels(old_to_remove)
-            self.join_channels(new_to_add)
+    # added this method to take care of dynamically changing channel list
+    def leave_and_join(self):
+        new_channels = self.redis.smembers('__channels')
+        # if channels is not set, then we just need to join
+        if len(self.channels) == 0 and len(new_channels) > 0:
+            print("about to join channels:" + str(len(new_channels)))
+            print(list(new_channels))
+            self.join_channels(self.channels_to_string(new_channels))
+            self.channels = new_channels
+        else:
+            # remove old channels that are no longer popular and add new ones
+            # some set magic
+            common = self.channels & new_channels
+            old_to_remove = self.channels - common
+            new_to_add = new_channels - common
+            if len(old_to_remove) > 0:
+                print("about to leave channels:")
+                print(old_to_remove)
+                self.leave_channels(self.channels_to_string(old_to_remove))
+                print("about to join channels:")
+                print(new_to_add)
+                self.join_channels(self.channels_to_string(new_to_add))
+                self.channels = new_channels
