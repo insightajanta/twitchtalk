@@ -80,7 +80,7 @@ class ChatMessageConsumer:
         self.chat_consumer = KafkaConsumer(bootstrap_servers=self.config['kafka_config'],
                                            value_deserializer=msgpack.loads, api_version=(0, 10, 1))
         self.chat_consumer.subscribe(['chatmessage'])
-        self.redis = redis.Redis(host='localhost', port=6379)
+        self.redis = redis.Redis(host=self.config['redis_host'], port=6379)
 
         # setup cassandra below
         self.cass = PythonCassandraExample.PythonCassandraExample(self.config)

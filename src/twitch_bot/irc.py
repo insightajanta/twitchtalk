@@ -7,7 +7,7 @@ class irc:
     def __init__(self, config):
         self.config = config
         self.channels = set()
-        self.redis = redis.Redis(host='localhost', port=6379)
+        self.redis = redis.Redis(host=self.config['redis_host'], port=6379)
 
     def check_for_message(self, data):
         if re.match(
