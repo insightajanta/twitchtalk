@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python -u
 
 from sys import argv
 
@@ -9,3 +9,4 @@ from src.kafka import *
 #live_channel_producer = LiveChannelProducer(config).
 print 'About to read chat from twitch'
 bot = Roboraj(config).run()
+

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python -u
 
 from sys import argv
 
@@ -9,3 +9,4 @@ from src.kafka import *
 
 print 'About to start to consume chat'
 LiveChannelConsumer(config).insert_data()
+

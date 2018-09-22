@@ -8,6 +8,7 @@ import time
 import redis
 
 from twitch import TwitchClient
+from src.config.config import *
 
 
 class LiveStreamProducer:
@@ -26,7 +27,7 @@ class LiveStreamProducer:
         count = 0
         channel_list = []
         for stream in streams:
-            print "In for loop for: "
+            # print "In for loop for: "
             # print stream
             if stream['viewers'] >= 10000:
                 count = count + 1
@@ -44,3 +45,6 @@ class LiveStreamProducer:
         while True:
             self.get_top_live_channels()
             time.sleep(60)
+
+if __name__ == '__main__':
+    LiveStreamProducer(config).get_top_live_channels()

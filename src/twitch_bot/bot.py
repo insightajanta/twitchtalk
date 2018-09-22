@@ -58,4 +58,4 @@ class Roboraj:
 
             self.chat_topic.send('chatmessage', {'channel': channel, 'username': username, 'message': message})
 
-            ppi(channel, message, username)
+            # ppi(channel, message, username)

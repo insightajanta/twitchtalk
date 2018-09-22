@@ -44,11 +44,11 @@ class LiveChannelConsumer:
                                                "language,"
                                                "mature,"
                                                "average_fps,"
+                                               "id,"
                                                "viewers) "
-                                               "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+                                               "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
         for msg in self.live_channel_consumer:
             convertedval = json.loads(msg.value)
-
             self.cass.session.execute(insert_sql, [str(msg.timestamp),
                                                    convertedval['broadcast_platform'],
                                                    convertedval['created_at'],
@@ -68,6 +68,7 @@ class LiveChannelConsumer:
                                                    convertedval['channel']['language'],
                                                    convertedval['channel']['mature'],
                                                    convertedval['average_fps'],
+                                                   str(convertedval['id']),
                                                    convertedval['viewers']])
             self.cass.log.info('Insert Completed: livechannel')
 
@@ -118,9 +119,8 @@ class ChatMessageConsumer:
                                                "ts,"
                                                "channel,"
                                                "username,"
-                                               "message,"
-                                               "checksum) VALUES (?,?,?,?,?)")
+                                               "message) VALUES (?,?,?,?)")
 
         for msg in self.chat_consumer:
-            self.cass.session.execute(insert_sql, [str(msg.timestamp), msg.value['channel'], msg.value['username'], msg.value['message'], msg.value['chatmessage']])
+            self.cass.session.execute(insert_sql, [str(msg.timestamp), msg.value['channel'], msg.value['username'], msg.value['message']])
             self.cass.log.info('Insert Completed: chatmessage')
