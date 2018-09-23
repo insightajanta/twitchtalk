@@ -65,8 +65,9 @@ class PythonCassandraExample:
 
     def create_tables(self):
         c_sql = """
-                CREATE TABLE IF NOT EXISTS livechannel (
-                ts text PRIMARY KEY,
+                CREATE TABLE IF NOT EXISTS livechannel2 (
+                uuid text,
+                ts text,
                 broadcast_platform text,
                 created_at text,
                 game text,
@@ -85,20 +86,22 @@ class PythonCassandraExample:
                 language text,
                 mature Boolean,
                 average_fps double,
-                viewers int);
+                id text,
+                viewers int,
+                PRIMARY KEY (uuid));
                  """
         self.session.execute(c_sql)
-        self.log.info("livechannel Table Created !!!")
+        self.log.info("livechannel2 Table Created !!!")
         c_sql = """
-                CREATE TABLE IF NOT EXISTS chatmessage (
-                ts text PRIMARY KEY,
+                CREATE TABLE IF NOT EXISTS chatmessage2 (
+                uuid text PRIMARY KEY,
+                ts text,
                 channel text,
                 username text,
-                message text,
-                checksum int);
+                message text);
                  """
         self.session.execute(c_sql)
-        self.log.info("chatmessage Table Created !!!")
+        self.log.info("chatmessage2 Table Created !!!")
 
     # lets do some batch insert
     # def insert_data(self, table_name, dict):

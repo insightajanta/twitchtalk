@@ -5,7 +5,7 @@ from cassandra.cluster import BatchStatement
 
 import json
 import redis
-import ast
+import uuid
 
 
 class LiveChannelConsumer:
@@ -24,7 +24,8 @@ class LiveChannelConsumer:
         self.cass.session.set_keyspace(self.config['cassandra_keyspace'])
 
     def insert_data(self):
-        insert_sql = self.cass.session.prepare("INSERT INTO livechannel ("
+        insert_sql = self.cass.session.prepare("INSERT INTO livechannel2 ("
+                                               "uuid,"
                                                "ts,"
                                                "broadcast_platform,"
                                                "created_at,"
@@ -46,10 +47,11 @@ class LiveChannelConsumer:
                                                "average_fps,"
                                                "id,"
                                                "viewers) "
-                                               "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+                                               "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
         for msg in self.live_channel_consumer:
             convertedval = json.loads(msg.value)
-            self.cass.session.execute(insert_sql, [str(msg.timestamp),
+            self.cass.session.execute(insert_sql, [uuid.uuid4().hex,
+                                                   str(msg.timestamp),
                                                    convertedval['broadcast_platform'],
                                                    convertedval['created_at'],
                                                    convertedval['game'],
@@ -70,7 +72,7 @@ class LiveChannelConsumer:
                                                    convertedval['average_fps'],
                                                    str(convertedval['id']),
                                                    convertedval['viewers']])
-            self.cass.log.info('Insert Completed: livechannel')
+            self.cass.log.info('Insert Completed: livechannel2')
 
 
 class ChatMessageConsumer:
@@ -115,12 +117,13 @@ class ChatMessageConsumer:
 
     def insert_chat_data(self):
         print "came in insert_chat_data"
-        insert_sql = self.cass.session.prepare("INSERT INTO chatmessage ("
+        insert_sql = self.cass.session.prepare("INSERT INTO chatmessage2 ("
+                                               "uuid,"
                                                "ts,"
                                                "channel,"
                                                "username,"
-                                               "message) VALUES (?,?,?,?)")
+                                               "message) VALUES (?,?,?,?,?)")
 
         for msg in self.chat_consumer:
-            self.cass.session.execute(insert_sql, [str(msg.timestamp), msg.value['channel'], msg.value['username'], msg.value['message']])
-            self.cass.log.info('Insert Completed: chatmessage')
+            self.cass.session.execute(insert_sql, [uuid.uuid4().hex, str(msg.timestamp), msg.value['channel'], msg.value['username'], msg.value['message']])
+            self.cass.log.info('Insert Completed: chatmessage2')
