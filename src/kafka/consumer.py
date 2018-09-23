@@ -93,7 +93,7 @@ class ChatMessageConsumer:
         # ConsumerRecord(topic=u'chatmessage', partition=0, offset=157, timestamp=1537320670585, timestamp_type=0, key=None,
         # value={' channel ': '#nickmercs', ' username ': 'jpking715', ' message ': 'this is live'}, checksum=1363374979, serialized_key_size=-1, serialized_value_size=66)
         for msg in self.chat_consumer:
-            print ("in for loop")
+            # print ("in for loop")
             username = msg.value['username']
             message = msg.value['message']
             if self.redis.get(message):

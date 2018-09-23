@@ -44,7 +44,7 @@ class LiveStreamProducer:
     def run(self):
         while True:
             self.get_top_live_channels()
-            time.sleep(60)
+            time.sleep(120)
 
 if __name__ == '__main__':
     LiveStreamProducer(config).get_top_live_channels()
