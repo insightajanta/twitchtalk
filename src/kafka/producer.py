@@ -37,7 +37,7 @@ class LiveStreamProducer:
 
         # store the current list in redis
         self.redis.delete('__channels')
-        self.redis.sadd('__channels', *channel_list[:5])
+        self.redis.sadd('__channels', *channel_list[:10])
 
         print "Total streams inserted: ", count, channel_list
 

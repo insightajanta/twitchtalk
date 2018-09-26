@@ -24,9 +24,10 @@ class LiveChannelConsumer:
         self.cass.session.set_keyspace(self.config['cassandra_keyspace'])
 
     def insert_data(self):
-        insert_sql = self.cass.session.prepare("INSERT INTO livechannel2 ("
-                                               "uuid,"
+        insert_sql = self.cass.session.prepare("INSERT INTO livechannel ("
                                                "ts,"
+                                               "hours,"
+                                               "uuid,"
                                                "broadcast_platform,"
                                                "created_at,"
                                                "game,"
@@ -41,17 +42,17 @@ class LiveChannelConsumer:
                                                "private_video,"
                                                "description,"
                                                "views,"
-                                               "name,"
+                                               "channel,"
                                                "language,"
                                                "mature,"
                                                "average_fps,"
                                                "id,"
                                                "viewers) "
-                                               "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+                                               "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
         for msg in self.live_channel_consumer:
             convertedval = json.loads(msg.value)
-            self.cass.session.execute(insert_sql, [uuid.uuid4().hex,
-                                                   str(msg.timestamp),
+            self.cass.session.execute(insert_sql, [msg.timestamp, msg.timestamp/3600000,
+                                                   uuid.uuid4(),
                                                    convertedval['broadcast_platform'],
                                                    convertedval['created_at'],
                                                    convertedval['game'],
@@ -72,7 +73,7 @@ class LiveChannelConsumer:
                                                    convertedval['average_fps'],
                                                    str(convertedval['id']),
                                                    convertedval['viewers']])
-            self.cass.log.info('Insert Completed: livechannel2')
+            self.cass.log.info('Insert Completed: livechannel')
 
 
 class ChatMessageConsumer:
@@ -117,13 +118,20 @@ class ChatMessageConsumer:
 
     def insert_chat_data(self):
         print "came in insert_chat_data"
-        insert_sql = self.cass.session.prepare("INSERT INTO chatmessage2 ("
-                                               "uuid,"
+        insert_sql = self.cass.session.prepare("INSERT INTO chatmessage ("
                                                "ts,"
+                                               "hours,"
+                                               "uuid,"
                                                "channel,"
                                                "username,"
-                                               "message) VALUES (?,?,?,?,?)")
+                                               "message) VALUES (?,?,?,?,?,?)")
 
         for msg in self.chat_consumer:
-            self.cass.session.execute(insert_sql, [uuid.uuid4().hex, str(msg.timestamp), msg.value['channel'], msg.value['username'], msg.value['message']])
-            self.cass.log.info('Insert Completed: chatmessage2')
+            self.cass.session.execute(insert_sql,
+                                      [msg.timestamp,
+                                       msg.timestamp/3600000,
+                                       uuid.uuid4(),
+                                       msg.value['channel'],
+                                       msg.value['username'],
+                                       msg.value['message']])
+            self.cass.log.info('Insert Completed: chatmessage')

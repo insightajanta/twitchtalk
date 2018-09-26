@@ -34,6 +34,21 @@ In cqlsh:
 - create keyspace testkeyspace with replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 3 };
 - create table livechannels(ts text primary key, value text)
 
+For cassandra-spark connector:
+
+Following instructions from: https://www.codementor.io/sheena/installing-cassandra-spark-linux-debian-ubuntu-14-du107vbhx
+
+- git clone https://github.com/datastax/spark-cassandra-connector.git
+- cd spark-cassandra-connector/
+- git ch v2.3.2
+- ./sbt/sbt assembly
+- cp spark-cassandra-connector/target/full/scala-2.11/spark-cassandra-connector-assembly-2.3.2.jar ~
+- spark-shell --jars ~/spark-cassandra-connector-assembly-2.3.2.jar 
+- val cm = sc.cassandraTable("twitchspace", "chatmessage2")
+- cm.take(10).foreach(println)
+- Or to read as a dataframe: val df = spark.read.format("org.apache.spark.sql.cassandra").options(Map( "table" -> "livechannel2", "keyspace" -> "twitchspace")).load()
+- df.show
+
 ##Redis
 brew install redis (installed redis-4.0.11.high_sierra.bottle.tar.gz)
 
