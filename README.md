@@ -70,3 +70,7 @@ docker run -it --link cassandra:cassandra --rm cassandra cqlsh cassandra
 - pip install dash==0.27.0
 - pip install dash-html-components==0.13.2
 - pip install dash-core-components==0.30.2
+
+#crontab entry
+0 * * * * spark-submit --master spark://ec2-18-213-94-80.compute-1.amazonaws.com:7077 --packages com.datastax.spark:spark-cassandra-connector_2.11:2.3.2 /home/ubuntu/twitchchat/src/spark/aggregation.py &> /home/ubuntu/twitchchat/logs/aggregator`date +"-%Y-%m-%d-%H-%M-%S"`.log
+

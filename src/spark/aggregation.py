@@ -1,7 +1,6 @@
 
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
-from src.config.config import *
 
 class Aggregator:
     def engagement_aggregator(spark):
@@ -41,5 +40,12 @@ class Aggregator:
             .options(table="popularchannel", keyspace="twitchspace").save()
 
     if __name__ == "__main__":
+	# TODO: Fixme to get the cassandra host from the config file
         spark = SparkSession.builder.appName("Twitch Aggregator")\
-            .config("spark.cassandra.connection.host", config['cassandra_host'][0]).getOrCreate()
+            .config("spark.cassandra.connection.host", "ec2-18-235-141-237.compute-1.amazonaws.com").getOrCreate()
+	# Aggregate away!!!
+	print("Starting live channel aggregation")
+	livechannel_aggregator(spark)
+	print("Starting engagement aggregation")
+	engagement_aggregator(spark)
+
