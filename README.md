@@ -43,7 +43,7 @@ Following instructions from: https://www.codementor.io/sheena/installing-cassand
 - git ch v2.3.2
 - ./sbt/sbt assembly
 - cp spark-cassandra-connector/target/full/scala-2.11/spark-cassandra-connector-assembly-2.3.2.jar ~
-- spark-shell --jars ~/spark-cassandra-connector-assembly-2.3.2.jar 
+- spark-shell --jars ~/spark-cassandra-connector-assembly-2.3.2.jar --conf spark.cassandra.connection.host="10.0.0.7"
 - val cm = sc.cassandraTable("twitchspace", "chatmessage2")
 - cm.take(10).foreach(println)
 - Or to read as a dataframe: val df = spark.read.format("org.apache.spark.sql.cassandra").options(Map( "table" -> "livechannel2", "keyspace" -> "twitchspace")).load()
@@ -65,3 +65,8 @@ docker run --name cassandra -d cassandra:3.11.3
 To connect using cqlsh, do the following
 
 docker run -it --link cassandra:cassandra --rm cassandra cqlsh cassandra
+
+#Dash
+- pip install dash==0.27.0
+- pip install dash-html-components==0.13.2
+- pip install dash-core-components==0.30.2

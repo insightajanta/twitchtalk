@@ -94,6 +94,7 @@ class PythonCassandraExample:
                  """
         self.session.execute(c_sql)
         self.log.info("livechannel Table Created !!!")
+
         c_sql = """
                 CREATE TABLE IF NOT EXISTS chatmessage (
                 hours int,
@@ -108,18 +109,35 @@ class PythonCassandraExample:
         self.session.execute(c_sql)
         self.log.info("chatmessage Table Created !!!")
 
-    # lets do some batch insert
-    # def insert_data(self, table_name, dict):
-    #     insert_sql = self.session.prepare("INSERT INTO  employee (emp_id, ename , sal,city) VALUES (?,?,?,?)")
-    #     batch = BatchStatement()
-    #     batch.add(insert_sql, (1, 'LyubovK', 2555, 'Dubai'))
-    #     batch.add(insert_sql, (2, 'JiriK', 5660, 'Toronto'))
-    #     batch.add(insert_sql, (3, 'IvanH', 2547, 'Mumbai'))
-    #     batch.add(insert_sql, (4, 'YuliaT', 2547, 'Seattle'))
-    #     self.session.execute(batch)
-    #     self.log.info('Batch Insert Completed')
-    #
-    # def select_data(self):
-    #     rows = self.session.execute('select * from employee limit 5;')
-    #     for row in rows:
-    #         print(row.ename, row.sal)
+        c_sql = """
+                CREATE TABLE IF NOT EXISTS popularChannel (
+                hour Timestamp,
+                channel text,
+                avg_viewers int,
+                PRIMARY KEY (hour, avg_viewers, channel))
+                with clustering order by (avg_viewers desc);
+                 """
+        self.session.execute(c_sql)
+        self.log.info("engagedChannel Table Created !!!")
+
+        c_sql = """
+                CREATE TABLE IF NOT EXISTS engagedUser (
+                hour Timestamp,
+                username text,
+                num_messages int,
+                PRIMARY KEY (hour, num_messages, username))
+                with clustering order by (num_messages desc);
+                 """
+        self.session.execute(c_sql)
+        self.log.info("engagedChannel Table Created !!!")
+
+        c_sql = """
+                CREATE TABLE IF NOT EXISTS engagedChannel (
+                hour Timestamp,
+                channel text,
+                num_messages int,
+                PRIMARY KEY (hour, num_messages, channel))
+                with clustering order by (num_messages desc);
+                 """
+        self.session.execute(c_sql)
+        self.log.info("engagedChannel Table Created !!!")
