@@ -9,6 +9,7 @@ import redis
 
 from twitch import TwitchClient
 from src.config.config import *
+from requests.exceptions import RequestException
 
 
 class LiveStreamProducer:
@@ -23,23 +24,28 @@ class LiveStreamProducer:
     def get_top_live_channels(self):
         print "About to get live streams"
 
-        streams = self.client.streams.get_live_streams(limit=100)
-        count = 0
-        channel_list = []
-        for stream in streams:
-            # print "In for loop for: "
-            # print stream
-            if stream['viewers'] >= 10000:
-                count = count + 1
-                channel_list.append(stream['channel']['name'])
-                self.producer.send('livechannels', json.dumps(stream, default=str))
-                # self.producer.send('livechannels', {'channel': stream['channel']['name'], 'viewers': stream['viewers']})
+        try:
+            streams = self.client.streams.get_live_streams(limit=100)
 
-        # store the current list in redis
-        self.redis.delete('__channels')
-        self.redis.sadd('__channels', *channel_list[:10])
+            count = 0
+            channel_list = []
+            for stream in streams:
+                # print "In for loop for: "
+                # print stream
+                if stream['viewers'] >= 10000:
+                    count = count + 1
+                    channel_list.append(stream['channel']['name'])
+                    self.producer.send('livechannels', json.dumps(stream, default=str))
+                    # self.producer.send('livechannels', {'channel': stream['channel']['name'], 'viewers': stream['viewers']})
 
-        print "Total streams inserted: ", count, channel_list
+            # store the current list in redis
+            self.redis.delete('__channels')
+            self.redis.sadd('__channels', *channel_list[:10])
+
+            print "Total streams inserted: ", count, channel_list
+        except RequestException:
+            print "Got exception!"
+
 
     def run(self):
         while True:

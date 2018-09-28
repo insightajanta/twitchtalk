@@ -43,9 +43,8 @@ class Aggregator:
 	# TODO: Fixme to get the cassandra host from the config file
         spark = SparkSession.builder.appName("Twitch Aggregator")\
             .config("spark.cassandra.connection.host", "ec2-18-235-141-237.compute-1.amazonaws.com").getOrCreate()
-	# Aggregate away!!!
-	print("Starting live channel aggregation")
-	livechannel_aggregator(spark)
-	print("Starting engagement aggregation")
-	engagement_aggregator(spark)
-
+    	# Aggregate away!!!
+	    print("Starting live channel aggregation")
+	    livechannel_aggregator(spark)
+	    print("Starting engagement aggregation")
+	    engagement_aggregator(spark)

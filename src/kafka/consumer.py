@@ -1,11 +1,10 @@
-from kafka import KafkaConsumer
-import msgpack
-from src.datastore import PythonCassandraExample
-from cassandra.cluster import BatchStatement
-
 import json
+import msgpack
 import redis
 import uuid
+
+from kafka import KafkaConsumer
+from src.datastore import PythonCassandraExample
 
 
 class LiveChannelConsumer:
