@@ -1,6 +1,6 @@
 package spark
 
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
 import org.joda.time.DateTime
 
 object Aggregator {
@@ -13,17 +13,13 @@ object Aggregator {
 
   def main(args: Array[String]): Unit = {
     val spark = SparkSession.builder()
-      .appName("kafka-tutorials")
-      .master("local[*]")
+      .appName("Aggregator")
       .config("spark.cassandra.connection.host", Config.cassandraHost)
       .config("hadoop.fs.s3n.awsAccessKeyId", Config.accessKeyId)
       .config("hadoop.fs.s3n.awsSecretAccessKey", Config.secretAccessKey)
       .getOrCreate()
 
     val sc = spark.conf
-
-//    sc.hadoopConfiguration.set("fs.s3n.awsAccessKeyId", Config.accessKeyId)
-//    sc.hadoopConfiguration.set("fs.s3n.awsSecretAccessKey", Config.secretAccessKey)
 
     val chatdf = spark.read.parquet(Config.chatMessagesS3Location)
     val lcdf = spark.read.parquet(Config.chatMessagesS3Location)
@@ -60,7 +56,9 @@ object Aggregator {
 
   def saveToCassandra(df: DataFrame, table: String) = {
     df.write.format("org.apache.spark.sql.cassandra").
-      options(Map( "table" -> table, "keyspace" -> Config.cassandraKeySpace)).save()
+      options(Map("table" -> table, "keyspace" -> Config.cassandraKeySpace)).
+      mode(SaveMode.Append).
+      save()
   }
 
   def minuteAggregator(df: DataFrame, metric: String) = {

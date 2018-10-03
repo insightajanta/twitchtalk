@@ -6,7 +6,6 @@ object TwitchChatProcessor {
   def main(args: Array[String]): Unit = {
     val spark = SparkSession.builder()
       .appName("ChatProcessor")
-      .master(Config.sparkMaster)
       .getOrCreate()
 
 //    val sc = spark.conf
