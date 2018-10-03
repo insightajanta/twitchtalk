@@ -2,3 +2,10 @@
 *.pyc
 *.log
 src/config/config.py
+scala/src/target/*
+scala/src/project/target/*
+scala/.idea/*
+scala/src/project/project/target/*
+*.class
+*.jar
+scala/target/*
