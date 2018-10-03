@@ -30,8 +30,8 @@ download from: http://www.apache.org/dyn/closer.lua/cassandra/3.11.3/apache-cass
 Follow instructions for Installing from binary tarball here: http://cassandra.apache.org/doc/latest/getting_started/installing.html
 
 In cqlsh:
-- create keyspace testkeyspace;
-- create keyspace testkeyspace with replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 3 };
+- create keyspace twitchspace;
+- create keyspace twitchspace with replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 3 };
 - create table livechannels(ts text primary key, value text)
 
 For cassandra-spark connector:
