@@ -2,6 +2,8 @@
 *.pyc
 *.log
 python/src/config/config.py
+python/.idea/*
+python/python.iml
 scala/src/target/*
 scala/src/project/target/*
 scala/.idea/*
@@ -10,3 +12,7 @@ scala/src/project/project/target/*
 *.jar
 scala/target/*
 scala/src/main/scala/spark/Config.scala
+.idea/*
+metastore_db/*
+scala/project/*
+scala/scala.iml
