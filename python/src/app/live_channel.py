@@ -83,7 +83,7 @@ class LiveChannelProcessor(object):
         batch.add(insert_sql, [now.hour,
                                now.minute,
                                now,
-                               '2018-10-02',#now.strftime("YYYY-MM-dd"),
+                               now.strftime("%Y-%m-%d"),
                                stream['broadcast_platform'],
                                stream['created_at'],
                                stream['game'],
