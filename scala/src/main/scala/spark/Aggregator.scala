@@ -1,16 +1,10 @@
 package spark
 
-import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
+import org.apache.spark.sql.{DataFrame, RelationalGroupedDataset, SaveMode, SparkSession}
 import org.joda.time.DateTime
 
+
 object Aggregator {
-  val minute = 60
-  val hour = 60 * 60
-  val day = hour * 24
-  val week = day * 7
-
-  val timeMap = Map("hour" -> hour, "day" -> day, "week" -> week)
-
   def main(args: Array[String]): Unit = {
     val spark = SparkSession.builder()
       .appName("Aggregator")
@@ -19,16 +13,27 @@ object Aggregator {
       .config("hadoop.fs.s3n.awsSecretAccessKey", Config.secretAccessKey)
       .getOrCreate()
 
-    val sc = spark.conf
+    val chatdf = spark.read.parquet(Config.chatMessagesS3Location).
+      selectExpr("username", "channel", "ts", "minutes", "hours", "cast(dt as String)" )
+    val lcdf = spark.read.
+      format("org.apache.spark.sql.cassandra").
+      options(Map("table" -> "live_channel", "keyspace" -> Config.cassandraKeySpace)).load()
 
-    val chatdf = spark.read.parquet(Config.chatMessagesS3Location)
-    val lcdf = spark.read.parquet(Config.chatMessagesS3Location)
-    if (args != null && args.head == "day")
-      dayAggregator(chatdf, "chat")
-    else if (args != null && args.head == "hour")
-      hourAggregator(chatdf, "chat")
-    else
-      minuteAggregator(chatdf, "chat")
+    if (!args.isEmpty && args.head == "day") {
+      dayAggregator(chatdf, "chat", "channel")
+      dayAggregator(chatdf, "chat", "username")
+      dayAggregator(lcdf, "live", "channel")
+    }
+    else if (!args.isEmpty && args.head == "hour") {
+      hourAggregator(chatdf, "chat", "channel")
+      hourAggregator(chatdf, "chat", "username")
+      hourAggregator(lcdf, "live", "channel")
+    }
+    else {
+      minuteAggregator(chatdf, "chat", "channel")
+      minuteAggregator(chatdf, "chat", "username")
+      minuteAggregator(lcdf, "live", "channel")
+    }
   }
 
   def byMinuteDF(inDF: DataFrame) : DataFrame = {
@@ -55,42 +60,39 @@ object Aggregator {
   }
 
   def saveToCassandra(df: DataFrame, table: String) = {
+    df.printSchema()
     df.write.format("org.apache.spark.sql.cassandra").
       options(Map("table" -> table, "keyspace" -> Config.cassandraKeySpace)).
       mode(SaveMode.Append).
       save()
   }
 
-  def minuteAggregator(df: DataFrame, metric: String) = {
+  def aggregateAndSave(groupedDataset: RelationalGroupedDataset, tablePrefix: String, table: String) = {
+    if (tablePrefix == "chat")
+      saveToCassandra(groupedDataset.count(), table)
+    else if (tablePrefix == "live")
+      saveToCassandra(groupedDataset.avg("viewers").withColumnRenamed("avg(viewers)", "count"), table)
+
+  }
+
+  def minuteAggregator(df: DataFrame, tablePrefix: String, metric: String) = {
     val minuteDF = byMinuteDF(df)
-    minuteDF.cache()
 
-    val channelByMinute = minuteDF.groupBy("dt", "hours", "minutes", "channel").count()
-    saveToCassandra(channelByMinute, s"${metric}_channel_by_minute")
-
-    val userByMinute = minuteDF.groupBy("dt", "hours", "minutes", "username").count()
-    saveToCassandra(userByMinute, s"${metric}_user_by_minute")
+    val groupedByMinute = minuteDF.groupBy("dt", "hours", "minutes", metric)
+    aggregateAndSave(groupedByMinute, tablePrefix, s"${tablePrefix}_${metric}_by_minute")
   }
 
-  def hourAggregator(df: DataFrame, metric: String) = {
+  def hourAggregator(df: DataFrame, tablePrefix: String, metric: String) = {
     val hourDF = byHourDF(df)
-    hourDF.cache()
 
-    val channelByHour = hourDF.groupBy("dt", "hours", "channel").count()
-    saveToCassandra(channelByHour, s"${metric}_channel_by_hour")
-
-    val userByHour = hourDF.groupBy("dt", "hours", "username").count()
-    saveToCassandra(userByHour, s"${metric}_user_by_hour")
+    val groupedByHour = hourDF.groupBy("dt", "hours", metric)
+    aggregateAndSave(groupedByHour, tablePrefix, s"${tablePrefix}_${metric}_by_hour")
   }
 
-  def dayAggregator(df: DataFrame, metric: String) = {
+  def dayAggregator(df: DataFrame, tablePrefix: String, metric: String) = {
     val dayDF = byDayDF(df)
-    dayDF.cache()
 
-    val channelByDay = dayDF.groupBy("dt", "channel").count()
-    saveToCassandra(channelByDay, s"${metric}_channel_by_day")
-
-    val userByDay = dayDF.groupBy("dt", "username").count()
-    saveToCassandra(userByDay, s"${metric}_user_by_day")
+    val groupedByDay = dayDF.groupBy("dt", metric)
+    aggregateAndSave(groupedByDay, tablePrefix, s"${tablePrefix}_${metric}_by_day")
   }
 }

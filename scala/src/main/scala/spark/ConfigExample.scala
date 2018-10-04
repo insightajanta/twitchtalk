@@ -1,6 +1,6 @@
 package spark
 
-object Config {
+object ConfigExample {
   val kafkaBrokers = "ec2-52-206-31-163.compute-1.amazonaws.com:9092,ec2-52-87-92-193.compute-1.amazonaws.com:9092,ec2-18-215-104-101.compute-1.amazonaws.com:9092"
   val accessKeyId = System.getenv("AWS_ACCESS_KEY_ID")
   val secretAccessKey = System.getenv("AWS_SECRET_ACCESS_KEY")

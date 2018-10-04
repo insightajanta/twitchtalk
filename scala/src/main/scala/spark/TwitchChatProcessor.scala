@@ -8,17 +8,13 @@ object TwitchChatProcessor {
       .appName("ChatProcessor")
       .getOrCreate()
 
-//    val sc = spark.conf
     import spark.implicits._
-
-//    sc.hadoopConfiguration.set("fs.s3n.awsAccessKeyId", Config.accessKeyId)
-//    sc.hadoopConfiguration.set("fs.s3n.awsSecretAccessKey", Config.secretAccessKey)
 
     val inputDf = spark.readStream.
       format("kafka").
       option("kafka.bootstrap.servers", Config.kafkaBrokers).
       option("subscribe", Config.kafkaTopic).
-      option("startingOffsets", "earliest").
+      option("startingOffsets", "latest").
       load()
 
     val chatDf = inputDf.selectExpr(
@@ -26,7 +22,7 @@ object TwitchChatProcessor {
       "timestamp as ts",
       "minute(timestamp) as minutes",
       "hour(timestamp) as hours",
-      "to_date(timestamp) as dt")
+      "date_format(timestamp, 'yyyy-MM-dd') as dt")
 
     import org.apache.spark.sql.types.{DataTypes, StructType}
     import org.apache.spark.sql.streaming.Trigger
@@ -42,9 +38,12 @@ object TwitchChatProcessor {
       format("parquet").
       option("path", Config.chatMessagesS3Location).
       option("checkpointLocation", "/tmp/checkpoints/chatfinal/").
+      partitionBy("dt", "hours").
       start()
 
-    spark.streams.awaitAnyTermination()
+    //https://stackoverflow.com/questions/45642904/spark-structured-streaming-multiple-sinks
+    //https://stackoverflow.com/questions/47228309/how-to-write-stream-to-s3-with-year-month-and-day-of-the-day-when-records-were
+      spark.streams.awaitAnyTermination()
   }
 }
 
