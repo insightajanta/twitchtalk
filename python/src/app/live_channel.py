@@ -80,10 +80,12 @@ class LiveChannelProcessor(object):
 
     @staticmethod
     def batch_add(now, batch, insert_sql, stream):
+	print(now.strftime("%Y-%m-%d"))
+
         batch.add(insert_sql, [now.hour,
                                now.minute,
                                now,
-                               '2018-10-02',#now.strftime("YYYY-MM-dd"),
+                               now.strftime("%Y-%m-%d"),
                                stream['broadcast_platform'],
                                stream['created_at'],
                                stream['game'],
