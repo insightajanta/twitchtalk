@@ -115,7 +115,7 @@ class PythonCassandraExample:
         self.log.info("chat_channel_by_minute Table Created !!!")
 
         c_sql = """
-                CREATE TABLE IF NOT EXISTS chat_user_by_minute (
+                CREATE TABLE IF NOT EXISTS chat_username_by_minute (
                 hours int,
                 minutes int,
                 dt text,
@@ -140,7 +140,7 @@ class PythonCassandraExample:
         self.log.info("chat_channel_by_hour Table Created !!!")
 
         c_sql = """
-                CREATE TABLE IF NOT EXISTS chat_user_by_hour (
+                CREATE TABLE IF NOT EXISTS chat_username_by_hour (
                 hours int,
                 dt text,
                 username text,
@@ -163,7 +163,7 @@ class PythonCassandraExample:
         self.log.info("chat_channel_by_day Table Created !!!")
 
         c_sql = """
-                CREATE TABLE IF NOT EXISTS chat_user_by_day (
+                CREATE TABLE IF NOT EXISTS chat_username_by_day (
                 dt text,
                 username text,
                 count int,
