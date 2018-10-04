@@ -80,8 +80,6 @@ class LiveChannelProcessor(object):
 
     @staticmethod
     def batch_add(now, batch, insert_sql, stream):
-	print(now.strftime("%Y-%m-%d"))
-
         batch.add(insert_sql, [now.hour,
                                now.minute,
                                now,
