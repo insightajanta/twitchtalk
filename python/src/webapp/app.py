@@ -3,6 +3,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 from src.config.config import config
 from data_util import DataUtil
+from datetime import datetime
 
 app = dash.Dash()
 minutes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
@@ -60,7 +61,7 @@ def get_week_graph(name, table_prefix):
                             id='week-graph-' + name,
                             figure={
                                 'data': [
-                                    {'x': row_map.keys(),
+                                    {'x': map(lambda x: days[datetime.strptime(x, '%Y-%m-%d').weekday()], row_map.keys()),
                                      'y': row_map.values(),
                                      'type': 'line', 'name': name}
                                 ],
@@ -130,10 +131,10 @@ def get_current_engaged_users():
 
 
 app.layout = html.Div(children=[
-    html.H1(children='Analyze Gamers and their Followers'),
+    html.H1(children='Twitch Talk'),
 
     html.Div(children=['''
-        Popular Channels (Average viewers) vs Engaged Channels (Users Chatting) Visualization.
+    Tracking Popularity and Engagement of Live channels
     ''']),
 
     html.Div(className='flex-grid',

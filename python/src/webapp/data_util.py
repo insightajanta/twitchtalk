@@ -100,9 +100,18 @@ class DataUtil:
         return ordered
 
 
+# def get_day(x):
+#     datetime.strptime(x, '%Y-%m-%d').day
+
 if __name__ == '__main__':
-    # print(DataUtil(config).get_daily_data('live_channel_by_day'))
-    chans = DataUtil(config).get_current_chat_channel(10)
-    print(chans.keys())
-    keys = map(lambda x: x[1:], chans.keys())
-    print(keys)
+    # daily = DataUtil(config).get_daily_data('live_channel_by_day')
+    # print(daily.keys())
+    # keys = map(lambda x: datetime.strptime(x, '%Y-%m-%d').weekday(), daily.keys())
+    # print(keys)
+    # chans = DataUtil(config).get_current_chat_channel(10)
+    # print(chans.keys())
+    # keys = map(lambda x: x[1:], chans.keys())
+    # print(keys)
+    print(DataUtil(config).get_per_minute_data('live_channel_by_minute'))
+    print(DataUtil(config).get_per_minute_data('chat_channel_by_minute'))
+
