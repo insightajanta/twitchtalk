@@ -53,17 +53,44 @@ class DataUtil:
         add_rows_to_map(rows, hour_map)
         return map_to_list(hour_map, 23)
 
-    def get_per_minute_data(self, table):
+    def get_per_minute_chat_data(self):
         now = datetime.utcnow()
         earlier = now - timedelta(hours=1, minutes=10)
-        query1 = "select minutes as metric, sum(count) as count from " + table + \
+        query1 = "select minutes as metric, sum(count) as count from chat_channel_minute" \
                  " where dt='" + earlier.strftime("%Y-%m-%d") + \
                  "' and hours =" + str(earlier.hour) + \
-                 " and minutes > " + str(earlier.minute) + " group by minutes"
-        query2 = "select minutes as metric, sum(count) as count from " + table + \
+                 " and minutes > " + str(now.minute) + " group by minutes"
+        query2 = "select minutes as metric, sum(count) as count from chat_channel_minute" \
                  " where dt='" + now.strftime("%Y-%m-%d") + \
                  "' and hours =" + str(now.hour) \
                  + " and minutes <= " + str(now.minute) + " group by minutes"
+
+        if self.config['debug']:
+            print(query1)
+            print(query2)
+
+        rows = self.cass.session.execute(query1)
+        minute_map = {}
+        add_rows_to_map(rows, minute_map)
+        rows = self.cass.session.execute(query2)
+        add_rows_to_map(rows, minute_map)
+        return map_to_list(minute_map, 59)
+
+    def get_per_minute_live_data(self):
+        now = datetime.utcnow()
+        earlier = now - timedelta(hours=1, minutes=10)
+        query1 = "select minutes as metric, sum(viewers) as count from live_channel" \
+                 " where dt='" + earlier.strftime("%Y-%m-%d") + \
+                 "' and hours =" + str(earlier.hour) + \
+                 " and minutes > " + str(now.minute) + " group by minutes"
+        query2 = "select minutes as metric, sum(viewers) as count from live_channel" \
+                 " where dt='" + now.strftime("%Y-%m-%d") + \
+                 "' and hours =" + str(now.hour) \
+                 + " and minutes <= " + str(now.minute) + " group by minutes"
+
+        if self.config['debug']:
+            print(query1)
+            print(query2)
 
         rows = self.cass.session.execute(query1)
         minute_map = {}
@@ -112,6 +139,7 @@ if __name__ == '__main__':
     # print(chans.keys())
     # keys = map(lambda x: x[1:], chans.keys())
     # print(keys)
-    print(DataUtil(config).get_per_minute_data('live_channel_by_minute'))
-    print(DataUtil(config).get_per_minute_data('chat_channel_by_minute'))
+    # print(DataUtil(config).get_per_minute_data('live_channel_by_minute'))
+    print(DataUtil(config).get_per_minute_chat_data())
+    # print(DataUtil(config).get_per_minute_live_data())
 

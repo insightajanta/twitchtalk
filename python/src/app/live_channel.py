@@ -40,14 +40,14 @@ class LiveChannelProcessor(object):
                 if stream['viewers'] >= 10000:
                     count = count + 1
                     channel_list.append(stream['channel']['name'])
-                    LiveChannelProcessor.batch_add(now, batch, insert_sql, stream)
+                    self.execute_insert(now, insert_sql, stream)
 
             # store the current list in redis
             self.redis.delete('__channels')
             self.redis.sadd('__channels', *channel_list[:10])
-            self.cass.session.execute(batch)
+            # self.cass.session.execute(batch)
             self.log.info("Total streams inserted: " + str(count) + str(channel_list))
-        except RequestException:
+        except:
             self.log.erro("Got exception! Igonoring")
 
     def prepare_insert_sql(self):
@@ -77,6 +77,34 @@ class LiveChannelProcessor(object):
                                          "id,"
                                          "viewers) "
                                          "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+
+    def execute_insert(self, now, insert_sql, stream):
+        vals = [now.hour,
+                now.minute,
+                now,
+                now.strftime("%Y-%m-%d"),
+                stream['broadcast_platform'],
+                stream['created_at'],
+                stream['game'],
+                stream['channel']['status'],
+                stream['channel']['updated_at'],
+                stream['channel']['privacy_options_enabled'],
+                stream['channel']['logo'],
+                stream['channel']['partner'],
+                stream['channel']['display_name'],
+                stream['channel']['followers'],
+                stream['channel']['broadcaster_language'],
+                stream['channel']['private_video'],
+                stream['channel']['description'],
+                stream['channel']['views'],
+                stream['channel']['name'],
+                stream['channel']['language'],
+                stream['channel']['mature'],
+                stream['average_fps'],
+                str(stream['id']),
+                stream['viewers']]
+        print "about to insert: " + str(insert_sql) + str(vals)
+        self.cass.session.execute(insert_sql, vals)
 
     @staticmethod
     def batch_add(now, batch, insert_sql, stream):

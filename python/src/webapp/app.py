@@ -17,19 +17,37 @@ days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 query_helper = DataUtil(config)
 
 
-def get_hour_graph(name, table_prefix):
+def get_hour_live_graph():
     return html.Div(className='col',
                     children=[
                         dcc.Graph(
-                            id='hour-graph-' + name,
+                            id='hour-graph-live',
                             figure={
                                 'data': [
                                     {'x': minutes,
-                                     'y': query_helper.get_per_minute_data(table_prefix + "_channel_by_minute"),
-                                     'type': 'line', 'name': name}
+                                     'y': query_helper.get_per_minute_live_data(),
+                                     'type': 'line', 'name': 'Popular'}
                                 ],
                                 'layout': {
-                                    'title': name + ' channel by hour, per minute'
+                                    'title': 'Popular channel by hour, per minute'
+                                }
+                            }
+                        )])
+
+
+def get_hour_chat_graph():
+    return html.Div(className='col',
+                    children=[
+                        dcc.Graph(
+                            id='hour-graph-chat',
+                            figure={
+                                'data': [
+                                    {'x': minutes,
+                                     'y': query_helper.get_per_minute_chat_data(),
+                                     'type': 'line', 'name': 'Engaged'}
+                                ],
+                                'layout': {
+                                    'title': 'Engaged channel by hour, per minute'
                                 }
                             }
                         )])
@@ -145,13 +163,13 @@ app.layout = html.Div(children=[
              ]),
     html.Div(className='flex-grid',
              children=[
-                 get_hour_graph("Engaged", "chat"),
+                 get_hour_chat_graph(),
                  get_day_graph("Engaged", "chat"),
                  get_week_graph("Engaged", "chat")
              ]),
     html.Div(className='flex-grid',
              children=[
-                 get_hour_graph("Popular", "live"),
+                 get_hour_live_graph(),
                  get_day_graph("Popular", "live"),
                  get_week_graph("Popular", "live")
              ])

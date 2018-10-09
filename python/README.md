@@ -74,3 +74,27 @@ docker run -it --link cassandra:cassandra --rm cassandra cqlsh cassandra
 #crontab entry
 0 * * * * spark-submit --master spark://ec2-18-213-94-80.compute-1.amazonaws.com:7077 --packages com.datastax.spark:spark-cassandra-connector_2.11:2.3.2 /home/ubuntu/twitchchat/src/spark/aggregation.py &> /home/ubuntu/twitchchat/logs/aggregator`date +"-%Y-%m-%d-%H-%M-%S"`.log
 
+#Airflow
+- (instructions) https://blog.insightdatascience.com/scheduling-spark-jobs-with-airflow-4c66f3144660
+- pip install airflow
+- the above instructions did not work for me
+
+Now following these:
+https://stlong0521.github.io/20161023%20-%20Airflow.html and https://blog.nolanemirot.com/2017/08/14/install-airflow-1-8-0-on-ubuntu-16-04/
+
+- sudo apt-get install redis
+- export AIRFLOW_GPL_UNIDECODE=yes
+- pip3 install apache-airflow
+- pip3 install apache-airflow[postgres]
+- pip3 install apache-airflow[redis]
+- airflow initdb
+- airflow webserver -p 8080
+- sudo apt-get install postgresql
+- sudo -i -u postgres
+- createuser --interactive (create ubuntu user)
+- createdb airflow
+- ctrl-D to come back to ubuntu user
+- psql -d airflow
+- airflow=# \password
+- change airflow.cfg: https://stlong0521.github.io/20161023%20-%20Airflow.html
+- 

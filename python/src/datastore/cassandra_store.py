@@ -173,6 +173,32 @@ class PythonCassandraExample:
         self.session.execute(c_sql)
         self.log.info("chat_user_by_day Table Created !!!")
 
+        c_sql = """
+                CREATE TABLE IF NOT EXISTS chat_channel_minute (
+                hours int,
+                minutes int,
+                dt text,
+                channel text,
+                count int,
+                PRIMARY KEY (dt, hours, minutes, channel))
+                with clustering order by (hours desc, minutes desc);
+                 """
+        self.session.execute(c_sql)
+        self.log.info("chat_channel_by_minute Table Created !!!")
+
+        c_sql = """
+                CREATE TABLE IF NOT EXISTS chat_username_minute (
+                hours int,
+                minutes int,
+                dt text,
+                username text,
+                count int,
+                PRIMARY KEY (dt, hours, minutes, username))
+                with clustering order by (hours desc, minutes desc);
+                 """
+        self.session.execute(c_sql)
+        self.log.info("chat_user_by_minute Table Created !!!")
+
     # live channel aggregate tables - by minute, by hour, by day
     def create_live_channels(self, keyspace):
         c_sql = "use " + keyspace
