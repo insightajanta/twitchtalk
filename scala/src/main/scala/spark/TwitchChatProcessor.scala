@@ -59,7 +59,7 @@ object TwitchChatProcessor {
       .trigger(Trigger.ProcessingTime(60000))
       .format("parquet")
       .option("path", Config.chatMessagesS3Location)
-      .option("checkpointLocation", s"hdfs://ec2-18-213-94-80.compute-1.amazonaws.com:9000/tmp/checkpointschatfinal/")
+      .option("checkpointLocation", s"hdfs://${Config.sparkMaster}:9000/tmp/checkpointschatfinal/")
       .partitionBy("dt", "hours")
       .start()
 
@@ -73,7 +73,7 @@ object TwitchChatProcessor {
     cf.writeStream
       .outputMode(OutputMode.Update())
       .trigger(Trigger.ProcessingTime(60000))
-      .option("checkpointLocation", s"hdfs://ec2-18-213-94-80.compute-1.amazonaws.com:9000/tmp/checkpoint/channel/")
+      .option("checkpointLocation", s"hdfs://${Config.sparkMaster}:9000/tmp/checkpoint/channel/")
       .foreach(sink)
       .start()
   }
@@ -86,7 +86,7 @@ object TwitchChatProcessor {
     cf.writeStream
       .outputMode(OutputMode.Update())
       .trigger(Trigger.ProcessingTime(60000))
-      .option("checkpointLocation", s"hdfs://ec2-18-213-94-80.compute-1.amazonaws.com:9000/tmp/checkpoint/username/")
+      .option("checkpointLocation", s"hdfs://${Config.sparkMaster}:9000/tmp/checkpoint/username/")
       .foreach(sink)
       .start()
   }

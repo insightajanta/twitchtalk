@@ -1,12 +1,13 @@
 package spark
 
 object ConfigExample {
-  val kafkaBrokers = "ec2-52-206-31-163.compute-1.amazonaws.com:9092,ec2-52-87-92-193.compute-1.amazonaws.com:9092,ec2-18-215-104-101.compute-1.amazonaws.com:9092"
+  val kafkaBrokers = "localhost:9092" // this can be a comma separated list in prod env
   val accessKeyId = System.getenv("AWS_ACCESS_KEY_ID")
   val secretAccessKey = System.getenv("AWS_SECRET_ACCESS_KEY")
-  val chatMessagesS3Location = "s3n://com.ajanta/data/chatmessage_new/"
-  val lcS3Location = "s3n://com.ajanta/data/livechannel/"
-  val kafkaTopic = "chatmessage_new"
-  val cassandraHost = "ec2-18-235-141-237.compute-1.amazonaws.com,ec2-35-174-180-132.compute-1.amazonaws.com,ec2-34-196-140-188.compute-1.amazonaws.com"
+  val chatMessagesS3Location = "s3n://<s3bucket>/<path>/"
+  val lcS3Location = "s3n://<s3bucket>/<path>/"
+  val kafkaTopic = "<kafka topic>"
+  val cassandraHost = "localhost" // this can be a comma separated list in prod env
   val cassandraKeySpace = "twitchspace"
+  val sparkMaster = "localhost"
 }

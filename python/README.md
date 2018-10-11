@@ -2,18 +2,18 @@
 
 ## Python packages to install
 
-#####To use kafka from Python install this package
+##### To use kafka from Python install this package
 - sudo pip install kafka-python
-#####To use json like format - here used for kafka ingestion
+##### To use json like format - here used for kafka ingestion
 - sudo pip install msgpack
-#####To use python-twitch-client
+##### To use python-twitch-client
 - sudo pip install python-twitch-client
 - note you may need to install additional dependencies here.
 I had to pip install the following on my macbook
     - six
     - requests
     - configparser
-#####To use python cassandra
+##### To use python cassandra
 - sudo pip install cassandra-driver
     
 
@@ -42,14 +42,14 @@ Following instructions from: https://www.codementor.io/sheena/installing-cassand
 - cp spark-cassandra-connector/target/full/scala-2.11/spark-cassandra-connector-assembly-2.3.2.jar ~
 - spark-shell --jars ~/spark-cassandra-connector-assembly-2.3.2.jar --conf spark.cassandra.connection.host="10.0.0.7"
 
-##Redis (local)
-#####MacOS
+## Redis (local)
+##### MacOS
 - brew install redis (installed redis-4.0.11.high_sierra.bottle.tar.gz)
 - brew services start redis
-#####Ubuntu
+##### Ubuntu
 - sudo pip install redis (Successfully installed redis-2.10.6)
 
-#Dash
+# Dash
 - pip install dash==0.27.0
 - pip install dash-html-components==0.13.2
 - pip install dash-core-components==0.30.2
