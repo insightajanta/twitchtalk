@@ -1,5 +1,4 @@
 import socket, re, time, sys, redis
-from functions_general import *
 
 
 class irc:
@@ -53,7 +52,7 @@ class irc:
         try:
             sock.connect((self.config['server'], self.config['port']))
         except:
-            pp('Cannot connect to server (%s:%s).' % (self.config['server'], self.config['port']), 'error')
+            print('Cannot connect to server (%s:%s).' % (self.config['server'], self.config['port']), 'error')
             sys.exit()
 
         sock.settimeout(None)
@@ -63,9 +62,9 @@ class irc:
         sock.send('NICK %s\r\n' % self.config['username'])
 
         if self.check_login_status(sock.recv(1024)):
-            pp('Login successful.')
+            print('Login successful.')
         else:
-            pp('Login unsuccessful. (hint: make sure your oauth token is set in self.config/self.config.py).', 'error')
+            print('Login unsuccessful. (hint: make sure your oauth token is set in self.config/self.config.py).', 'error')
             sys.exit()
 
         self.leave_and_join()
@@ -77,15 +76,15 @@ class irc:
         return ','.join(hash_prepended)
 
     def join_channels(self, channels):
-        pp('Joining channels %s.' % channels)
+        print('Joining channels %s.' % channels)
         self.channels = channels
         self.sock.send('JOIN %s\r\n' % channels)
-        pp('Joined channels.')
+        print('Joined channels.')
 
     def leave_channels(self, channels):
-        pp('Leaving chanels %s,' % channels)
+        print('Leaving chanels %s,' % channels)
         self.sock.send('PART %s\r\n' % channels)
-        pp('Left channels.')
+        print('Left channels.')
 
     # added this method to take care of dynamically changing channel list
     def leave_and_join(self):

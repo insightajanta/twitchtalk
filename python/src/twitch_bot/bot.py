@@ -2,14 +2,12 @@
 Simple IRC Bot for Twitch.tv
 
 Developed by Aidan Thomson <aidraj0@gmail.com>
+Adapted by Ajanta
 """
 
-import irc as irc_
-import msgpack
-from functions_general import *
-from kafka import KafkaProducer
-from kafka.errors import KafkaError
 import json
+from kafka import KafkaProducer
+import irc as irc_
 
 
 class Roboraj:
@@ -39,7 +37,7 @@ class Roboraj:
         data = sock.recv(config['socket_buffer_size']).rstrip()
 
         if len(data) == 0:
-            pp('Connection was lost, reconnecting.')
+            print('Connection was lost, reconnecting.')
             self.irc.channels = set()
             self.socket = self.irc.get_irc_socket_object()
 

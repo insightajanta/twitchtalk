@@ -29,7 +29,7 @@ def get_hour_live_graph():
                                      'type': 'line', 'name': 'Popular'}
                                 ],
                                 'layout': {
-                                    'title': 'Popular channel by hour, per minute'
+                                    'title': 'Popular - avg viewership per minute'
                                 }
                             }
                         )])
@@ -47,7 +47,7 @@ def get_hour_chat_graph():
                                      'type': 'line', 'name': 'Engaged'}
                                 ],
                                 'layout': {
-                                    'title': 'Engaged channel by hour, per minute'
+                                    'title': 'Engaged - chat messages per minute'
                                 }
                             }
                         )])
@@ -65,7 +65,7 @@ def get_day_graph(name, table_prefix):
                                      'type': 'line', 'name': name}
                                 ],
                                 'layout': {
-                                    'title': name + ' channel by day, per hour'
+                                    'title': name
                                 }
                             }
                         )])
@@ -79,12 +79,13 @@ def get_week_graph(name, table_prefix):
                             id='week-graph-' + name,
                             figure={
                                 'data': [
-                                    {'x': map(lambda x: days[datetime.strptime(x, '%Y-%m-%d').weekday()], row_map.keys()),
+                                    {'x': map(lambda x: days[datetime.strptime(x, '%Y-%m-%d').weekday()],
+                                              row_map.keys()),
                                      'y': row_map.values(),
                                      'type': 'line', 'name': name}
                                 ],
                                 'layout': {
-                                    'title': name + ' channel by week, per day'
+                                    'title': name
                                 }
                             }
                         )])
@@ -148,32 +149,38 @@ def get_current_engaged_users():
                         )])
 
 
-app.layout = html.Div(children=[
-    html.H1(children='Twitch Talk'),
+def serve_layout():
+    return html.Div(children=[
+        html.H1(children='Twitch Talk'),
 
-    html.Div(children=['''
+        html.Div(children=['''
     Tracking Popularity and Engagement of Live channels
     ''']),
 
-    html.Div(className='flex-grid',
-             children=[
-                 get_current_popular_channels(),
-                 get_current_engaged_channels(),
-                 get_current_engaged_users()
-             ]),
-    html.Div(className='flex-grid',
-             children=[
-                 get_hour_chat_graph(),
-                 get_day_graph("Engaged", "chat"),
-                 get_week_graph("Engaged", "chat")
-             ]),
-    html.Div(className='flex-grid',
-             children=[
-                 get_hour_live_graph(),
-                 get_day_graph("Popular", "live"),
-                 get_week_graph("Popular", "live")
-             ])
-])
+        html.Div(className='flex-grid',
+                 children=[
+                     get_current_popular_channels(),
+                     get_current_engaged_channels(),
+                     get_current_engaged_users()
+                 ]),
+        html.Div(className='flex-grid',
+                 children=[
+                     get_hour_chat_graph(),
+                     get_day_graph("Engaged - chat messages per hour", "chat"),
+                     get_week_graph("Engaged - chat messages per day", "chat")
+                 ]),
+        html.Div(className='flex-grid',
+                 children=[
+                     get_hour_live_graph(),
+                     get_day_graph("Popular - avg viewership per hour", "live"),
+                     get_week_graph("Popular - avg viewership per day", "live")
+                 ])
+    ])
+
+
+app.layout = serve_layout
 
 if __name__ == '__main__':
-    app.run_server()
+    if config['debug']:
+        print(config['webapp_host'] + ":" + config['webapp_port'])
+    app.run_server(debug=True, host=config['webapp_host'], port=config['webapp_port'])

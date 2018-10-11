@@ -1,10 +1,8 @@
-import json
 import msgpack
 import redis
-import uuid
-
 from kafka import KafkaConsumer
-from src.datastore import PythonCassandraExample
+
+from src.datastore.cassandra_store import PythonCassandraExample
 
 
 class ChatMessageConsumer:
@@ -24,8 +22,6 @@ class ChatMessageConsumer:
         self.cass.session.set_keyspace(self.config['cassandra_keyspace'])
 
     def run(self):
-        # ConsumerRecord(topic=u'chatmessage', partition=0, offset=157, timestamp=1537320670585, timestamp_type=0, key=None,
-        # value={' channel ': '#nickmercs', ' username ': 'jpking715', ' message ': 'this is live'}, checksum=1363374979, serialized_key_size=-1, serialized_value_size=66)
         for msg in self.chat_consumer:
             # print ("in for loop")
             username = msg.value['username']
@@ -46,23 +42,3 @@ class ChatMessageConsumer:
                         print "found an offender: " + username
                 else:
                     self.redis.set(username, str(msg.timestamp) + ':' + str(1))
-
-    def insert_chat_data(self):
-        print "came in insert_chat_data"
-        insert_sql = self.cass.session.prepare("INSERT INTO chatmessage ("
-                                               "ts,"
-                                               "hours,"
-                                               "uuid,"
-                                               "channel,"
-                                               "username,"
-                                               "message) VALUES (?,?,?,?,?,?)")
-
-        for msg in self.chat_consumer:
-            self.cass.session.execute(insert_sql,
-                                      [msg.timestamp,
-                                       msg.timestamp/3600000,
-                                       uuid.uuid4(),
-                                       msg.value['channel'],
-                                       msg.value['username'],
-                                       msg.value['message']])
-            self.cass.log.info('Insert Completed: chatmessage')

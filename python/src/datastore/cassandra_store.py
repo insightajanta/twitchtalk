@@ -1,12 +1,12 @@
 """
 Python  by Techfossguru
 Copyright (C) 2017  Satish Prasad
-
+Adapted by Ajanta
+This file is used by setup.py to create necessary cassandra tables
 """
 import logging
-from cassandra import ConsistencyLevel
-from cassandra.cluster import Cluster, BatchStatement
-from cassandra.query import SimpleStatement
+
+from cassandra.cluster import Cluster
 
 
 class PythonCassandraExample:

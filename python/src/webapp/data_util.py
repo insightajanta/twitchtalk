@@ -99,47 +99,30 @@ class DataUtil:
         add_rows_to_map(rows, minute_map)
         return map_to_list(minute_map, 59)
 
-    def get_current_live_channel(self, n):
-        query = "select * from live_channel_by_hour limit " + str(n)
+    def get_top_n_last_hour(self, n, table, column):
+        now = datetime.utcnow()
+        earlier = now - timedelta(hours=1)
+
+        query = "select " \
+                + column + " as metric, count from " + table \
+                + " where dt='" + earlier.strftime("%Y-%m-%d") + "' limit " + str(n)
+        if config['debug']:
+            print(query)
         rows = self.cass.session.execute(query)
         row_map = {}
         for row in rows:
-            row_map[row.channel] = row.count
+            row_map[row.metric] = row.count
         ordered = OrderedDict(sorted(row_map.items(), key=lambda t: t[1]))
+        if config['debug']:
+            print(ordered)
         return ordered
+
+    def get_current_live_channel(self, n):
+        return self.get_top_n_last_hour(n, "live_channel_by_hour", "channel")
 
     def get_current_chat_user(self, n):
-        query = "select * from chat_user_by_hour limit " + str(n)
-        rows = self.cass.session.execute(query)
-        row_map = {}
-        for row in rows:
-            row_map[row.username] = row.count
-        ordered = OrderedDict(sorted(row_map.items(), key=lambda t: t[1]))
-        return ordered
+        return self.get_top_n_last_hour(n, "chat_username_by_hour", "username")
 
     def get_current_chat_channel(self, n):
-        query = "select * from chat_channel_by_hour limit " + str(n)
-        rows = self.cass.session.execute(query)
-        row_map = {}
-        for row in rows:
-            row_map[row.channel] = row.count
-        ordered = OrderedDict(sorted(row_map.items(), key=lambda t: t[1]))
-        return ordered
-
-
-# def get_day(x):
-#     datetime.strptime(x, '%Y-%m-%d').day
-
-if __name__ == '__main__':
-    # daily = DataUtil(config).get_daily_data('live_channel_by_day')
-    # print(daily.keys())
-    # keys = map(lambda x: datetime.strptime(x, '%Y-%m-%d').weekday(), daily.keys())
-    # print(keys)
-    # chans = DataUtil(config).get_current_chat_channel(10)
-    # print(chans.keys())
-    # keys = map(lambda x: x[1:], chans.keys())
-    # print(keys)
-    # print(DataUtil(config).get_per_minute_data('live_channel_by_minute'))
-    print(DataUtil(config).get_per_minute_chat_data())
-    # print(DataUtil(config).get_per_minute_live_data())
+        return self.get_top_n_last_hour(n, "chat_channel_by_hour", "channel")
 

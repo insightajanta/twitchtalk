@@ -72,7 +72,6 @@ object Aggregator {
       saveToCassandra(groupedDataset.count(), table)
     else if (tablePrefix == "live")
       saveToCassandra(groupedDataset.avg("viewers").withColumnRenamed("avg(viewers)", "count"), table)
-
   }
 
   def minuteAggregator(df: DataFrame, tablePrefix: String, metric: String) = {
