@@ -27,12 +27,25 @@ class DataUtil:
         self.cass.session.set_keyspace(self.config['cassandra_keyspace'])
 
     def get_daily_data(self, table):
-        query = "select dt, sum(count) as count from " + table + " group by dt limit 7"
+        now = datetime.utcnow()
+        earlier = now - timedelta(days=7)
+
+        query = "select dt, sum(count) as count from " + table \
+                + " where dt > '" + earlier.strftime("%Y-%m-%d") + "' group by dt limit 7 allow filtering"
+        if config['debug']:
+            print query
+
         rows = self.cass.session.execute(query)
+        days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
         row_map = {}
         for row in rows:
             row_map[row.dt] = row.count
-        return row_map
+
+        new_map = dict((days[datetime.strptime(key, '%Y-%m-%d').weekday()], value) for (key, value) in row_map.items())
+        ret_map = OrderedDict()
+        for day in days:
+            ret_map[day] = new_map.pop(day, -1)
+        return ret_map
 
     def get_hourly_data(self, table):
         now = datetime.utcnow()
@@ -126,3 +139,6 @@ class DataUtil:
     def get_current_chat_channel(self, n):
         return self.get_top_n_last_hour(n, "chat_channel_by_hour", "channel")
 
+
+if __name__ == '__main__':
+    print(DataUtil(config).get_daily_data("chat_channel_by_day"))

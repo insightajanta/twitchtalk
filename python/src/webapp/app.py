@@ -79,8 +79,8 @@ def get_week_graph(name, table_prefix):
                             id='week-graph-' + name,
                             figure={
                                 'data': [
-                                    {'x': map(lambda x: days[datetime.strptime(x, '%Y-%m-%d').weekday()],
-                                              row_map.keys()),
+                                    {'x': row_map.keys(), #map(lambda x: days[datetime.strptime(x, '%Y-%m-%d').weekday()],
+                                              #row_map.keys()),
                                      'y': row_map.values(),
                                      'type': 'line', 'name': name}
                                 ],
